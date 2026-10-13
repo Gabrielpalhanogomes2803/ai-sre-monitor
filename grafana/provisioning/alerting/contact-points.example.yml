@@ -1,0 +1,21 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: SRE Notifications Code
+    receivers:
+      - uid: sre-email-code
+        type: email
+        disableResolveMessage: false
+        settings:
+          addresses: your-email@example.com
+          singleEmail: false
+          subject: '{{ template "sre.subject" . }}'
+          message: '{{ template "sre.message" . }}'
+
+      - uid: sre-ai-webhook-code
+        type: webhook
+        disableResolveMessage: false
+        settings:
+          url: http://ai-sre-agent:8001/webhook/grafana
+          httpMethod: POST

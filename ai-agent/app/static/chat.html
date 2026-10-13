@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI SRE Assistant</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111827;
+      color: #e5e7eb;
+      margin: 0;
+      padding: 30px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: #9ca3af;
+      margin-bottom: 24px;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 14px;
+      border-radius: 8px;
+      border: 1px solid #374151;
+      background: #1f2937;
+      color: #fff;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+
+    button {
+      margin-top: 12px;
+      padding: 12px 20px;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+    }
+
+    .response {
+      margin-top: 24px;
+      padding: 18px;
+      border-radius: 8px;
+      background: #1f2937;
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+
+    .answer {
+      white-space: pre-wrap;
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    .meta {
+      margin-top: 18px;
+      padding-top: 12px;
+      border-top: 1px solid #374151;
+      font-size: 13px;
+      color: #9ca3af;
+    }
+
+    .loading {
+      color: #fbbf24;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>AI SRE Assistant</h1>
+
+    <div class="subtitle">
+      Consulte o histórico de incidentes monitorados pelo ambiente.
+    </div>
+
+    <textarea
+      id="question"
+      placeholder="Ex.: O que aconteceu no último incidente?"
+    ></textarea>
+
+    <button onclick="askQuestion()">Perguntar</button>
+
+    <div id="response" class="response">
+      A resposta aparecerá aqui.
+    </div>
+  </div>
+
+  <script>
+    async function askQuestion() {
+      const question = document.getElementById("question").value.trim();
+      const responseBox = document.getElementById("response");
+
+      if (!question) {
+        responseBox.innerText = "Digite uma pergunta.";
+        return;
+      }
+
+      responseBox.innerHTML = '<span class="loading">Analisando histórico...</span>';
+
+      try {
+        const response = await fetch("/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            question: question
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          responseBox.innerText = "Erro ao consultar o AI SRE Assistant.";
+          return;
+        }
+
+        const answer = data.result?.answer || "Sem resposta.";
+        const used = data.result?.incidents_used ?? 0;
+
+        responseBox.innerHTML = "";
+
+        const answerElement = document.createElement("div");
+        answerElement.className = "answer";
+        answerElement.textContent = answer;
+
+        const metaElement = document.createElement("div");
+        metaElement.className = "meta";
+        metaElement.textContent =
+          "Baseado em " + used + (used === 1 ? " incidente" : " incidentes") + " do histórico.";
+
+        responseBox.appendChild(answerElement);
+        responseBox.appendChild(metaElement);
+
+      } catch (error) {
+        responseBox.innerText =
+          "Falha ao se comunicar com o AI SRE Agent.";
+      }
+    }
+  </script>
+</body>
+</html>

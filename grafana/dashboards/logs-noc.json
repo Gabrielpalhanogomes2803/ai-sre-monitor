@@ -1,0 +1,981 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "type": "row",
+      "title": "HTTP HEALTH",
+      "id": 1,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": []
+    },
+    {
+      "type": "stat",
+      "title": "Real HTTP Requests",
+      "id": 2,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 1
+      },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"nginx\",service=\"portfolio\",log_type=\"access\"} != \"Blackbox-Exporter\" [$__range]))",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "HTTP 2xx",
+      "id": 3,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
+      "targets": [
+        {
+          "expr": "sum(\n  count_over_time(\n    {job=\"nginx\",service=\"portfolio\",log_type=\"access\"}\n    != \"Blackbox-Exporter\"\n    | pattern `<client_ip> - <user> [<_>] \"<http_method> <request_uri> <protocol>\" <http_status> <bytes> \"<referer>\" \"<agent>\"`\n    | http_status=~\"2..\"\n    [$__range]\n  )\n)",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "HTTP 4xx",
+      "id": 4,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 1
+      },
+      "targets": [
+        {
+          "expr": "sum(\n  count_over_time(\n    {job=\"nginx\",service=\"portfolio\",log_type=\"access\"}\n    != \"Blackbox-Exporter\"\n    | pattern `<client_ip> - <user> [<_>] \"<http_method> <request_uri> <protocol>\" <http_status> <bytes> \"<referer>\" \"<agent>\"`\n    | http_status=~\"4..\"\n    [$__range]\n  )\n)",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 20
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "HTTP 5xx",
+      "id": 5,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 1
+      },
+      "targets": [
+        {
+          "expr": "sum(\n  count_over_time(\n    {job=\"nginx\",service=\"portfolio\",log_type=\"access\"}\n    != \"Blackbox-Exporter\"\n    | pattern `<client_ip> - <user> [<_>] \"<http_method> <request_uri> <protocol>\" <http_status> <bytes> \"<referer>\" \"<agent>\"`\n    | http_status=~\"5..\"\n    [$__range]\n  )\n)",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "SYNTHETIC MONITORING",
+      "id": 6,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 6
+      },
+      "panels": []
+    },
+    {
+      "type": "stat",
+      "title": "Blackbox Checks",
+      "id": 7,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 7
+      },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"nginx\",service=\"portfolio\",log_type=\"access\"} |= \"Blackbox-Exporter\" [$__range]))",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "GET Requests",
+      "id": 8,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 7
+      },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"nginx\",service=\"portfolio\",method=\"GET\"} != \"Blackbox-Exporter\" [$__range]))",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "HEAD Requests",
+      "id": 9,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 7
+      },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"nginx\",service=\"portfolio\",method=\"HEAD\"} != \"Blackbox-Exporter\" [$__range]))",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "NGINX Error Events",
+      "id": 10,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 18,
+        "y": 7
+      },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"nginx\",service=\"portfolio\",log_type=\"error\"}[$__range]))",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 5
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "TRAFFIC OVER TIME",
+      "id": 11,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 12
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Real HTTP Traffic",
+      "id": 12,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 13
+      },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"nginx\",service=\"portfolio\",log_type=\"access\"} != \"Blackbox-Exporter\" [$__auto]))",
+          "legendFormat": "requests",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "HTTP Status Over Time",
+      "id": 13,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 13
+      },
+      "targets": [
+        {
+          "expr": "sum by (status) (count_over_time({job=\"nginx\",service=\"portfolio\",status=~\"[2-5]..\"} != \"Blackbox-Exporter\" [$__auto]))",
+          "legendFormat": "{{status}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "row",
+      "title": "PORTFOLIO LOG STREAM",
+      "id": 14,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 21
+      },
+      "panels": []
+    },
+    {
+      "type": "logs",
+      "title": "Real Access Logs",
+      "id": 15,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 22
+      },
+      "targets": [
+        {
+          "expr": "{job=\"nginx\",service=\"portfolio\",log_type=\"access\"} != \"Blackbox-Exporter\"",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": false,
+        "prettifyLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      }
+    },
+    {
+      "type": "logs",
+      "title": "Portfolio Error Logs",
+      "id": 16,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 24,
+        "x": 0,
+        "y": 32
+      },
+      "targets": [
+        {
+          "expr": "{job=\"nginx\",service=\"portfolio\",log_type=\"error\"}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": true,
+        "wrapLogMessage": true,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      }
+    },
+    {
+      "type": "row",
+      "title": "SECURITY / INTERNET NOISE",
+      "id": 17,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 41
+      },
+      "panels": []
+    },
+    {
+      "type": "stat",
+      "title": "HTTP 444",
+      "id": 18,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 0,
+        "y": 42
+      },
+      "targets": [
+        {
+          "expr": "sum(\n  count_over_time(\n    {job=\"nginx\",service=\"default\",log_type=\"access\"}\n    | pattern `<client_ip> - <user> [<_>] \"<http_method> <request_uri> <protocol>\" <http_status> <bytes> \"<referer>\" \"<agent>\"`\n    | http_status=\"444\"\n    [$__range]\n  )\n)",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "HTTP 400",
+      "id": 19,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 6,
+        "y": 42
+      },
+      "targets": [
+        {
+          "expr": "sum(\n  count_over_time(\n    {job=\"nginx\",service=\"default\",log_type=\"access\"}\n    | pattern `<client_ip> - <user> [<_>] \"<http_method> <request_uri> <protocol>\" <http_status> <bytes> \"<referer>\" \"<agent>\"`\n    | http_status=\"400\"\n    [$__range]\n  )\n)",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "0"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "none",
+        "graphMode": "area",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Suspicious Requests",
+      "id": 20,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 5,
+        "w": 6,
+        "x": 12,
+        "y": 42
+      },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({job=\"nginx\"} |~ \"(\\\\.git|\\\\.svn|\\\\.env|wp-login|phpmyadmin|nice%20ports)\" [$__range]))",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "0",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 1
+              },
+              {
+                "color": "red",
+                "value": 10
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      }
+    },
+    {
+      "type": "logs",
+      "title": "External Scanner Activity",
+      "id": 22,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 47
+      },
+      "targets": [
+        {
+          "expr": "{job=\"nginx\",service=\"default\",log_type=\"access\"}",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "showLabels": false,
+        "wrapLogMessage": false,
+        "enableLogDetails": true,
+        "sortOrder": "Descending"
+      }
+    },
+    {
+      "type": "row",
+      "title": "TRAFFIC ANALYSIS",
+      "id": 23,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 57
+      },
+      "panels": []
+    },
+    {
+      "type": "table",
+      "title": "Top Requested URLs",
+      "id": 24,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 58
+      },
+      "targets": [
+        {
+          "expr": "topk(10,\n  sum by (request_uri) (\n    count_over_time(\n      {job=\"nginx\",service=\"portfolio\",log_type=\"access\"}\n      != \"Blackbox-Exporter\"\n      | pattern `<client_ip> - <user> [<_>] \"<http_method> <request_uri> <protocol>\" <http_status> <bytes> \"<referer>\" \"<agent>\"`\n      [$__range]\n    )\n  )\n)",
+          "legendFormat": "{{request_uri}}",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      }
+    },
+    {
+      "type": "table",
+      "title": "Top Client IPs",
+      "id": 25,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 58
+      },
+      "targets": [
+        {
+          "expr": "topk(10,\n  sum by (client_ip) (\n    count_over_time(\n      {job=\"nginx\",service=\"portfolio\",log_type=\"access\"}\n      != \"Blackbox-Exporter\"\n      | pattern `<client_ip> - <user> [<_>] \"<http_method> <request_uri> <protocol>\" <http_status> <bytes> \"<referer>\" \"<agent>\"`\n      [$__range]\n    )\n  )\n)",
+          "legendFormat": "{{client_ip}}",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      }
+    },
+    {
+      "type": "bargauge",
+      "title": "HTTP Methods",
+      "id": 26,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 67
+      },
+      "targets": [
+        {
+          "expr": "sum by (http_method) (\n  count_over_time(\n    {job=\"nginx\",service=\"portfolio\",log_type=\"access\"}\n    != \"Blackbox-Exporter\"\n    | pattern `<client_ip> - <user> [<_>] \"<http_method> <request_uri> <protocol>\" <http_status> <bytes> \"<referer>\" \"<agent>\"`\n    [$__range]\n  )\n)",
+          "legendFormat": "{{http_method}}",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "options": {
+        "displayMode": "gradient",
+        "orientation": "horizontal",
+        "showUnfilled": true,
+        "reduceOptions": {
+          "values": true,
+          "calcs": [
+            "lastNotNull"
+          ]
+        }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "min": 0
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "table",
+      "title": "Top 404 Paths",
+      "id": 27,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 67
+      },
+      "targets": [
+        {
+          "expr": "topk(10,\n  sum by (request_uri) (\n    count_over_time(\n      {job=\"nginx\",service=\"portfolio\",log_type=\"access\"}\n      != \"Blackbox-Exporter\"\n      | pattern `<client_ip> - <user> [<_>] \"<http_method> <request_uri> <protocol>\" <http_status> <bytes> \"<referer>\" \"<agent>\"`\n      | http_status=\"404\"\n      [$__range]\n    )\n  )\n)",
+          "legendFormat": "{{request_uri}}",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No 404s"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "row",
+      "title": "SECURITY ANALYSIS",
+      "id": 28,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 76
+      },
+      "panels": []
+    },
+    {
+      "type": "table",
+      "title": "Top Scanner IPs",
+      "id": 29,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 0,
+        "y": 77
+      },
+      "targets": [
+        {
+          "expr": "topk(\n  10,\n  sum by (client_ip) (\n    count_over_time(\n      {job=\"nginx\",service=\"default\",log_type=\"access\"}\n      | pattern `<client_ip> - <user> [<_>] \"<http_method> <request_uri> <protocol>\" <http_status> <bytes> \"<referer>\" \"<agent>\"`\n      [$__range]\n    )\n  )\n)",
+          "legendFormat": "{{client_ip}}",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      }
+    },
+    {
+      "type": "table",
+      "title": "Top Suspicious Paths",
+      "id": 30,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 12,
+        "x": 12,
+        "y": 77
+      },
+      "targets": [
+        {
+          "expr": "topk(\n  10,\n  sum by (request_uri) (\n    count_over_time(\n      {job=\"nginx\"}\n      | pattern `<client_ip> - <user> [<_>] \"<http_method> <request_uri> <protocol>\" <http_status> <bytes> \"<referer>\" \"<agent>\"`\n      | request_uri=~\".*(\\\\.git|\\\\.svn|\\\\.env|wp-login|phpmyadmin|nice%20ports).*\"\n      [$__range]\n    )\n  )\n)",
+          "legendFormat": "{{request_uri}}",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No suspicious paths"
+        },
+        "overrides": []
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Scanner Activity Over Time",
+      "id": 32,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 86
+      },
+      "targets": [
+        {
+          "expr": "sum(\n  count_over_time(\n    {job=\"nginx\",service=\"default\",log_type=\"access\"}\n    [$__auto]\n  )\n)",
+          "legendFormat": "scanner / internet noise",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Top 5xx Paths",
+      "id": 33,
+      "datasource": {
+        "type": "loki",
+        "uid": "loki"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 86
+      },
+      "targets": [
+        {
+          "expr": "topk(10,\n  sum by (request_uri) (\n    count_over_time(\n      {job=\"nginx\",service=\"portfolio\",log_type=\"access\"}\n      != \"Blackbox-Exporter\"\n      | pattern `<client_ip> - <user> [<_>] \"<http_method> <request_uri> <protocol>\" <http_status> <bytes> \"<referer>\" \"<agent>\"`\n      | http_status=~\"5..\"\n      [$__range]\n    )\n  )\n)",
+          "legendFormat": "{{request_uri}}",
+          "refId": "A",
+          "queryType": "instant"
+        }
+      ],
+      "options": {
+        "showHeader": true,
+        "cellHeight": "sm"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "noValue": "No 404s"
+        },
+        "overrides": []
+      }
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 41,
+  "tags": [
+    "noc",
+    "logs",
+    "loki",
+    "nginx",
+    "sre",
+    "security"
+  ],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "timezone": "browser",
+  "title": "Logs & Incidents NOC",
+  "uid": "logs-incidents-noc",
+  "version": 7
+}

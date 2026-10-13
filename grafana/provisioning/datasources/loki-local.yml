@@ -1,0 +1,10 @@
+apiVersion: 1
+
+datasources:
+  - name: Loki-Local
+    uid: loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    editable: true
+    isDefault: false

@@ -1,0 +1,862 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: noc-core-alerts
+    folder: Infrastructure
+    interval: 1m
+
+    rules:
+
+      # =====================================================
+      # PORTFOLIO DOWN
+      # =====================================================
+      - uid: portfolio-down
+        title: Portfolio Fora do Ar
+        condition: C
+
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: PBFA97CFB590B2093
+            model:
+              editorMode: code
+              expr: probe_success{job="portfolio"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              conditions:
+                - evaluator:
+                    type: lt
+                    params:
+                      - 1
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+              refId: C
+              type: threshold
+
+        for: 2m
+        noDataState: Alerting
+        execErrState: Error
+
+        annotations:
+          summary: Portfolio indisponível
+          description: O monitoramento externo não conseguiu acessar gabrielgomes.cloud.
+
+        labels:
+          severity: critical
+          environment: production
+          team: sre
+
+
+      # =====================================================
+      # HIGH CPU
+      # =====================================================
+      - uid: high-cpu
+        title: CPU Alta
+        condition: C
+
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: PBFA97CFB590B2093
+            model:
+              editorMode: code
+              expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 85
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+              refId: C
+              type: threshold
+
+        for: 10m
+        noDataState: NoData
+        execErrState: Error
+
+        annotations:
+          summary: Uso de CPU elevado
+          description: O uso de CPU permaneceu acima de 85% por 10 minutos.
+
+        labels:
+          severity: warning
+          environment: production
+          team: sre
+
+
+      # =====================================================
+      # HIGH MEMORY
+      # =====================================================
+      - uid: high-memory
+        title: Memória Alta
+        condition: C
+
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: PBFA97CFB590B2093
+            model:
+              editorMode: code
+              expr: 100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 85
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+              refId: C
+              type: threshold
+
+        for: 10m
+        noDataState: NoData
+        execErrState: Error
+
+        annotations:
+          summary: Uso de memória elevado
+          description: O uso de memória permaneceu acima de 85% por 10 minutos.
+
+        labels:
+          severity: warning
+          environment: production
+          team: sre
+
+
+      # =====================================================
+      # HIGH DISK
+      # =====================================================
+      - uid: high-disk
+        title: Disco Alto
+        condition: C
+
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: PBFA97CFB590B2093
+            model:
+              editorMode: code
+              expr: 100 * (1 - (node_filesystem_avail_bytes{mountpoint="/",fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{mountpoint="/",fstype!~"tmpfs|overlay"}))
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 80
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+              refId: C
+              type: threshold
+
+        for: 10m
+        noDataState: NoData
+        execErrState: Error
+
+        annotations:
+          summary: Uso de disco elevado
+          description: O uso do filesystem raiz permaneceu acima de 80% por 10 minutos.
+
+        labels:
+          severity: warning
+          environment: production
+          team: sre
+
+
+      # =====================================================
+      # LOKI DOWN
+      # =====================================================
+      - uid: loki-down
+        title: Loki Fora do Ar
+        condition: C
+
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: PBFA97CFB590B2093
+            model:
+              editorMode: code
+              expr: up{job="loki"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              conditions:
+                - evaluator:
+                    type: lt
+                    params:
+                      - 1
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+              refId: C
+              type: threshold
+
+        for: 2m
+        noDataState: Alerting
+        execErrState: Error
+
+        annotations:
+          summary: Loki indisponível
+          description: O Prometheus não consegue coletar métricas do Loki.
+
+        labels:
+          severity: critical
+          environment: production
+          team: sre
+
+
+      # =====================================================
+      # ALLOY DOWN
+      # =====================================================
+      - uid: alloy-down
+        title: Alloy Fora do Ar
+        condition: C
+
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: PBFA97CFB590B2093
+            model:
+              editorMode: code
+              expr: up{job="alloy"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              conditions:
+                - evaluator:
+                    type: lt
+                    params:
+                      - 1
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+              refId: C
+              type: threshold
+
+        for: 2m
+        noDataState: Alerting
+        execErrState: Error
+
+        annotations:
+          summary: Grafana Alloy indisponível
+          description: O Prometheus não consegue coletar métricas do Grafana Alloy.
+
+        labels:
+          severity: critical
+          environment: production
+          team: sre
+
+      # =====================================================
+      # NGINX DOWN
+      # =====================================================
+      - uid: nginx-down
+        title: Nginx Exporter Fora do Ar
+        condition: C
+
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: PBFA97CFB590B2093
+            model:
+              editorMode: code
+              expr: up{job="nginx"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              conditions:
+                - evaluator:
+                    type: lt
+                    params:
+                      - 1
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+              refId: C
+              type: threshold
+
+        for: 2m
+        noDataState: Alerting
+        execErrState: Error
+
+        annotations:
+          summary: Nginx Exporter indisponível
+          description: O Prometheus não consegue coletar métricas do Nginx Exporter.
+
+        labels:
+          severity: critical
+          environment: production
+          team: sre
+
+      # =====================================================
+      # HTTP 5XX ERRORS
+      # =====================================================
+      - uid: http-5xx-errors
+        title: Erros HTTP 5xx
+        condition: C
+
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: loki
+            model:
+              editorMode: code
+              expr: |
+                sum(
+                  count_over_time(
+                    {job="nginx",service="portfolio",log_type="access"}
+                    | pattern `<client_ip> - <user> [<_>] "<http_method> <request_uri> <protocol>" <http_status> <bytes> "<referer>" "<agent>"`
+                    | http_status=~"5.."
+                    [5m]
+                  )
+                )
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 1
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+              refId: C
+              type: threshold
+
+        for: 2m
+        noDataState: OK
+        execErrState: Error
+
+        annotations:
+          summary: Erros HTTP 5xx detectados
+          description: Foram detectadas múltiplas respostas HTTP 5xx no Portfolio nos últimos 5 minutos.
+
+        labels:
+          severity: critical
+          environment: production
+          team: sre
+
+      # =====================================================
+      # HIGH LATENCY
+      # =====================================================
+      - uid: high-latency
+        title: Latência Alta
+        condition: C
+
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: PBFA97CFB590B2093
+            model:
+              editorMode: code
+              expr: probe_duration_seconds{job="portfolio"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0.5
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+              refId: C
+              type: threshold
+
+        for: 5m
+        noDataState: OK
+        execErrState: Error
+
+        annotations:
+          summary: Latência do Portfolio elevada
+          description: O tempo de resposta externo do Portfolio permaneceu acima de 500 ms por 5 minutos.
+
+        labels:
+          severity: warning
+          environment: production
+          team: sre
+
+      # =====================================================
+      # TLS EXPIRY WARNING
+      # =====================================================
+      - uid: tls-expiry-warning
+        title: Certificado TLS Próximo do Vencimento
+        condition: C
+
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: PBFA97CFB590B2093
+            model:
+              editorMode: code
+              expr: (probe_ssl_earliest_cert_expiry{job="portfolio"} - time()) / 86400
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              conditions:
+                - evaluator:
+                    type: lt
+                    params:
+                      - 30
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+              refId: C
+              type: threshold
+
+        for: 5m
+        noDataState: OK
+        execErrState: Error
+
+        annotations:
+          summary: Certificado TLS vence em menos de 30 dias
+          description: O certificado TLS do Portfolio tem menos de 30 dias até o vencimento.
+
+        labels:
+          severity: warning
+          environment: production
+          team: sre
+
+      # =====================================================
+      # TLS EXPIRY CRITICAL
+      # =====================================================
+      - uid: tls-expiry-critical
+        title: Certificado TLS Crítico
+        condition: C
+
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: PBFA97CFB590B2093
+            model:
+              editorMode: code
+              expr: (probe_ssl_earliest_cert_expiry{job="portfolio"} - time()) / 86400
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              conditions:
+                - evaluator:
+                    type: lt
+                    params:
+                      - 15
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+              refId: C
+              type: threshold
+
+        for: 5m
+        noDataState: OK
+        execErrState: Error
+
+        annotations:
+          summary: Certificado TLS vence em menos de 15 dias
+          description: O certificado TLS do Portfolio está próximo do vencimento e requer atenção imediata.
+
+        labels:
+          severity: critical
+          environment: production
+          team: sre
+
+      # =====================================================
+      # NODE EXPORTER DOWN
+      # =====================================================
+      - uid: node-exporter-down
+        title: Node Exporter Fora do Ar
+        condition: C
+
+        data:
+          - refId: A
+            queryType: ""
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: PBFA97CFB590B2093
+            model:
+              editorMode: code
+              expr: up{job="node_exporter"}
+              instant: true
+              intervalMs: 1000
+              maxDataPoints: 43200
+              refId: A
+
+          - refId: B
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              reducer: last
+              refId: B
+              type: reduce
+
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: B
+              conditions:
+                - evaluator:
+                    type: lt
+                    params:
+                      - 1
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+              refId: C
+              type: threshold
+
+        for: 2m
+        noDataState: Alerting
+        execErrState: Error
+
+        annotations:
+          summary: Node Exporter indisponível
+          description: O Prometheus não consegue coletar métricas do sistema pelo Node Exporter.
+
+        labels:
+          severity: critical
+          environment: production
+          team: sre

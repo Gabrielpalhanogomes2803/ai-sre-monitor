@@ -1,0 +1,58 @@
+local.file_match "nginx_logs" {
+  path_targets = [
+    {
+      __path__ = "/var/log/nginx/gabriel-portfolio-access.log",
+      job      = "nginx",
+      service  = "portfolio",
+      log_type = "access",
+    },
+    {
+      __path__ = "/var/log/nginx/gabriel-portfolio-error.log",
+      job      = "nginx",
+      service  = "portfolio",
+      log_type = "error",
+    },
+    {
+      __path__ = "/var/log/nginx/access.log",
+      job      = "nginx",
+      service  = "default",
+      log_type = "access",
+    },
+    {
+      __path__ = "/var/log/nginx/error.log",
+      job      = "nginx",
+      service  = "default",
+      log_type = "error",
+    },
+  ]
+}
+
+loki.source.file "nginx_logs" {
+  targets    = local.file_match.nginx_logs.targets
+  forward_to = [loki.process.nginx_logs.receiver]
+}
+
+loki.process "nginx_logs" {
+  forward_to = [loki.write.local.receiver]
+
+  stage.match {
+    selector = "{log_type=\"access\"}"
+
+    stage.regex {
+      expression = `^(?P<client_ip>\S+) - (?P<remote_user>\S+) \[(?P<time_local>[^\]]+)\] "(?P<method>[A-Z]+) (?P<uri>\S+) (?P<protocol>[^"]+)" (?P<status>[0-9]{3}) (?P<bytes>[0-9]+) "(?P<referer>[^"]*)" "(?P<user_agent>[^"]*)"$`
+    }
+
+    stage.labels {
+      values = {
+        method = "",
+        status = "",
+      }
+    }
+  }
+}
+
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

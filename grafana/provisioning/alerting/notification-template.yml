@@ -1,0 +1,131 @@
+apiVersion: 1
+
+templates:
+  - orgId: 1
+    name: sre-email-template
+    template: |
+      {{ define "sre.subject" -}}
+      {{ if eq .Status "firing" }}🔥{{ else }}✅{{ end }} {{ .CommonLabels.alertname }}
+      {{- end }}
+
+      {{ define "sre.message" -}}
+      {{ if eq .Status "firing" }}🔥 INCIDENTE ATIVO{{ else }}✅ INCIDENTE RESOLVIDO{{ end }}
+
+      {{ range .Alerts }}
+      {{ .Labels.alertname }}
+
+      Status: {{ if eq .Status "firing" }}ATIVO{{ else }}RESOLVIDO{{ end }}
+      {{- if .Labels.severity }}
+      Severidade: {{ if eq .Labels.severity "critical" }}CRÍTICA{{ else }}{{ .Labels.severity | toUpper }}{{ end }}
+      {{- end }}
+      {{- if .Labels.environment }}
+      Ambiente: {{ .Labels.environment | toUpper }}
+      {{- end }}
+
+      {{- if .Annotations.summary }}
+
+      Problema:
+      {{ .Annotations.summary }}
+      {{- end }}
+
+      {{- if .Annotations.description }}
+
+      Impacto / contexto:
+      {{ .Annotations.description }}
+      {{- end }}
+
+      {{- if eq .Labels.alertname "Loki Fora do Ar" }}
+
+      Investigar primeiro:
+      1. docker compose ps loki
+      2. docker logs loki --tail 100
+      3. Conectividade com loki:3100
+
+      {{- else if eq .Labels.alertname "Alloy Fora do Ar" }}
+
+      Investigar primeiro:
+      1. docker compose ps alloy
+      2. docker logs alloy --tail 100
+      3. Comunicação com Loki
+
+      {{- else if eq .Labels.alertname "Portfolio Fora do Ar" }}
+
+      Investigar primeiro:
+      1. Validar acesso externo ao site
+      2. Verificar Nginx
+      3. Conferir DNS e TLS
+
+      {{- else if eq .Labels.alertname "Erros HTTP 5xx" }}
+
+      Investigar primeiro:
+      1. Rotas afetadas
+      2. Logs de acesso/erro do Nginx
+      3. Saúde da aplicação
+
+      {{- else if eq .Labels.alertname "CPU Alta" }}
+
+      Investigar primeiro:
+      1. Processos com maior CPU
+      2. Containers com maior consumo
+      3. Mudanças recentes
+
+      {{- else if eq .Labels.alertname "Memória Alta" }}
+
+      Investigar primeiro:
+      1. Memória disponível
+      2. Processos/containers com maior uso
+      3. Eventos de OOM
+
+      {{- else if eq .Labels.alertname "Disco Alto" }}
+
+      Investigar primeiro:
+      1. Uso dos filesystems
+      2. Docker volumes/logs
+      3. Crescimento do Loki
+
+      {{- else if eq .Labels.alertname "Latência Alta" }}
+
+      Investigar primeiro:
+      1. Tempo de resposta externo
+      2. Nginx
+      3. CPU, memória e rede
+
+      {{- else if eq .Labels.alertname "Nginx Exporter Fora do Ar" }}
+
+      Investigar primeiro:
+      1. docker compose ps nginx-exporter
+      2. docker logs nginx-exporter --tail 100
+      3. Verificar o endpoint de métricas do Nginx
+
+      {{- else if eq .Labels.alertname "Node Exporter Fora do Ar" }}
+
+      Investigar primeiro:
+      1. docker compose ps node-exporter
+      2. docker logs node-exporter --tail 100
+      3. Verificar a coleta de métricas do host
+
+      {{- else if eq .Labels.alertname "Certificado TLS Próximo do Vencimento" }}
+
+      Investigar primeiro:
+      1. Verificar a data de expiração
+      2. Conferir a renovação automática
+      3. Validar DNS, Cloudflare e cadeia TLS
+
+      {{- else if eq .Labels.alertname "Certificado TLS Crítico" }}
+
+      Investigar primeiro:
+      1. Verificar a expiração imediatamente
+      2. Conferir a renovação automática
+      3. Renovar e validar o certificado
+
+      {{- else }}
+
+      Investigar primeiro:
+      1. Status do serviço
+      2. Logs recentes
+      3. Conectividade entre componentes
+      {{- end }}
+
+      {{ end }}
+      AI SRE Monitor
+      {{- end }}

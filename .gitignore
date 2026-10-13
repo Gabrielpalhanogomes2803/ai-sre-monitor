@@ -1,0 +1,44 @@
+# Secrets
+.env
+*.env
+.env.*
+!*.env.example
+
+# Runtime / databases
+ai-agent/data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Backups
+backups/
+*.bak
+*.backup
+*.before-*
+*.failed-*
+docker-compose.before-*
+docker-compose.yml.bak
+docker-compose.yml.before-*
+
+# Certificates / keys
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Logs
+*.log
+
+# Editors / OS
+.DS_Store
+.vscode/
+.idea/
+
+# Local Grafana contact point
+grafana/provisioning/alerting/contact-points.yml
