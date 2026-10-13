@@ -200,9 +200,12 @@ b```
 
 Screenshots of the NOC dashboards and AI SRE Assistant should be stored in:
 
-```text
-docs/screenshots/
-```
+<img width="1672" height="941" alt="Imagem do ChatGPT 13 de out  de 2026, 17_29_19-3" src="https://github.com/user-attachments/assets/fe51ab72-2ddd-41ad-bd4c-8c9b2ca78112" />
+
+<img width="1672" height="941" alt="Imagem do ChatGPT 13 de out  de 2026, 17_29_16-2" src="https://github.com/user-attachments/assets/a3ec23e0-b782-4ec9-aa80-7aaa0a6c98c2" />
+
+<img width="1672" height="941" alt="Imagem do ChatGPT 13 de out  de 2026, 17_29_14-1" src="https://github.com/user-attachments/assets/848ab61b-cf9f-4e4e-b222-1ea9cccab49d" />
+
 
 ## Future Improvements
 
