@@ -181,7 +181,7 @@ ai-sre-monitor/
 |-- loki/
 |-- prometheus/
 |-- .env.example
-|-- .gitignor
+|-- .gitignore
 |-- docker-compose.yml
 `-- README.md
 ```
@@ -189,12 +189,28 @@ ai-sre-monitor/
 ## Running the Project
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Gabrielpalhanogomes2803/ai-sre-monitor.git
 cd ai-sre-monitor
 cp .env.example .env
 cp grafana/provisioning/alerting/contact-points.example.yml grafana/provisioning/alerting/contact-points.yml
+docker compose config --quiet
+# After completing the host-specific prerequisites below:
 docker compose up -d --build
 ```
+
+### Host-specific prerequisites
+
+Before starting, review docker-compose.yml and the examples:
+
+- Fill the local .env SMTP settings; never commit real values.
+- Provision /etc/ai-sre-agent.env securely on the Docker host: the Compose file requires it.
+- Review the Nginx access-log mount and the exporter target at 172.18.0.1:8080.
+  That address depends on the host network and is not portable.
+- Review the copied Grafana contact points before starting notifications.
+- docker compose config --quiet checks configuration without printing resolved secrets;
+  it does not prove the services can start or reach their dependencies.
+
+The README corrections do not constitute a fresh deployment test.
 
 ## Screenshots
 
